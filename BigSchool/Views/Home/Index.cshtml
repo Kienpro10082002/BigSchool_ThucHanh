@@ -1,0 +1,64 @@
+﻿@model IEnumerable<BigSchool.Models.Course>
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="row">
+    <ul class="cousre">
+        @foreach(var course in Model)
+            {
+                <li>
+                    <div class="date">
+                        <div class="month">
+                            @course.DateTime.ToString("MM")
+                        </div>
+                        <div class="day">
+                            @course.DateTime.ToString("dd")
+                        </div>
+                    </div>
+                    <div class="details">
+                        <span class="lecturer">
+                            @course.Lecturer.Name
+                            <button data-course-id="@course.LecturerId" class="btn btn-default btn-sm js-toggle-follow">Follow</button>
+                        </span>
+                        <span class="category">
+                            @course.Category.Name
+                        </span>
+                        <button data-course-id="@course.Id" class="btn btn-default btn-sm js-toggle-attendace">Going?</button>
+                    </div>
+                </li>
+            }
+    </ul>
+</div>
+
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+            $(".js-toggle-attendace").click(function (e) {
+                var button = $(e.target);
+                $post("/api/attendances", { courseId: button.attr("data-course-id") })
+                    .done(function () {
+                        button
+                            .removeClass("btn-default")
+                            .addClass("btn-info")
+                            .text("Going");
+                    })
+                    .fail(function () {
+                        alert("Something failed!");
+                    })
+            });
+
+            $(".js-toggle-follow".click(function (e) {
+                var button = $(e.target);
+                $post("/api/attendances", { courseId: button.attr("data-course-id") })
+                    .done(function () {
+                        button.text("Following");
+                    })
+                    .fail(function () {
+                        alert("Something failed!");
+                    })
+            });
+        });
+    </script>
+}
